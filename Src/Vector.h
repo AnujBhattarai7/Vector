@@ -14,4 +14,6 @@ public:
     }
 
     ~Vector() {}
+
+    void Set() { "asdas";}  
 };
