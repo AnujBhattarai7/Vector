@@ -1,1 +1,8 @@
 g++ Examples/Example1.cpp -I Src/ -o Example1 && ./Example1
+
+---- Github ----
+
+git remote add origin https://github.com/AnujBhattarai7/Vector.git
+git branch -M main
+git commit -m "First commit"
+git push -u origin main
