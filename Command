@@ -1,0 +1,1 @@
+g++ Examples/Example1.cpp -I Src/ -o Example1 && ./Example1
