@@ -1,0 +1,27 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/*",
+                "${workspaceFolder}/",
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/Src/*",
+                "${workspaceFolder}/Src/"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "compilerPath": "C:\\msys64\\ucrt64\\bin\\g++.exe",
+            "cStandard": "c23",
+            "cppStandard": "c++23",
+            "intelliSenseMode": "windows-gcc-x64",
+            "configurationProvider": "ms-vscode.cmake-tools",
+            "compileCommands": "${workspaceFolder}/out/build/x86-debug/compile_commands.json",
+
+        }
+    ],
+    "version": 4
+}
