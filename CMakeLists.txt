@@ -12,8 +12,10 @@ message(${CMAKE_CURRENT_SOURCE_DIR})
 
 set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 
-set("${CMAKE_CURRENT_SOURCE_DIR}/Src/")
-add_executable(Vector Examples/main.cpp)
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/Src/")
+
+add_executable(Vector "Examples/Example1.cpp" "Src/Operators.h")
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
