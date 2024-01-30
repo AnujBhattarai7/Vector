@@ -2,6 +2,58 @@
 #include <vector>
 #include "Vector.h"
 
+struct Test
+{
+    Test(int n = 1) : _n(n)
+    {
+    }
+
+    Test(const Test &Other)
+        : _n(Other._n)
+    {
+        _PRINT_("[TEST]: Copy");
+    }
+
+    Test(Test &&_T)
+        : _n(_T._n)
+    {
+        _PRINT_("[TEST]: Move");
+    }
+
+    ~Test()
+    {
+        _PRINT_("[TEST]: Delete")
+    }
+
+    friend std::ostream &operator<<(std::ostream &os, Test &_T)
+    {
+        os << _T._n;
+        return os;
+    }
+
+    inline Test &operator=(int n)
+    {
+        _n = n;
+        return *this;
+    }
+
+    inline Test &operator=(const Test &_O)
+    {
+        _PRINT_("[TEST]: Copy");
+        _n = _O._n;
+        return *this;
+    }
+
+    inline Test &operator=(Test &&_O)
+    {
+        _PRINT_("[TEST]: Move");
+        _n = _O._n;
+        return *this;
+    }
+
+    int _n = 0;
+};
+
 struct MemoryManager
 {
     int _Allocation, _Free;
@@ -9,32 +61,45 @@ struct MemoryManager
 
 static MemoryManager _MemoryManager;
 
-void* operator new(size_t size)
+void *operator new(size_t size)
 {
+    std::cout << "Allocation"
+              << "\n";
     _MemoryManager._Allocation += size;
-    void* p = malloc(size);
-    return p;
+    return malloc(size);
 }
 
-void operator delete(void* p, size_t size)
+void operator delete(void *p, size_t size)
 {
+    std::cout << "Delete"
+              << "\n";
     _MemoryManager._Free += size;
+
     free(p);
 }
 
-
 int main(int argc, char const *argv[])
 {
-    std::cout << "Hello" << "\n";
+    std::cout << "Hello"
+              << "\n";
 
-    int* n = new int[2];
-    delete[] n;
+    {
+        Vector<Test> _V = {Test(2), Test(3), Test(4)};
+        _V.Reserve(10);
+
+        _PRINT_("");
+        for (int i = 0; i < _V.Size(); i++)
+        {
+            _PRINT_(_V[i])
+        }
+        _PRINT_("");
+    }
+    _PRINT_("");
 
     std::cin.get();
-    
-    _PRINT_("Memory Allocated: " << _MemoryManager._Allocation << " bytes.");    
-    _PRINT_("Memory Freed: " << _MemoryManager._Free << " bytes.");
+
+    _PRINT_("[MEMORY_METRICS]: Allocated: " << _MemoryManager._Allocation << " bytes..")
+    _PRINT_("[MEMORY_METRICS]: Freed: " << _MemoryManager._Free << " bytes..")
 
     return 0;
 }
-
