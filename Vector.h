@@ -11,11 +11,11 @@
         std::cout << x << "\n"; \
     }
 
-#define _VEC_ERROR_(x) \
-{   \
-    _PRINT_(x); \
-    exit(EXIT_FAILURE); \
-}
+#define _VEC_ERROR_(x)      \
+    {                       \
+        _PRINT_(x);         \
+        exit(EXIT_FAILURE); \
+    }
 
 template <typename _T, int _TS = 0>
 class Vector
@@ -71,7 +71,10 @@ public:
     void Erase(int i);
 
     // Reserves the given no of size in _V
-    void Reserve(int Size) { _Alloc(Size); }
+    void Reserve(int Size)
+    {
+        _Alloc(Size);
+    }
 
 private:
     // The dynamic array which stores the data
@@ -155,7 +158,7 @@ inline void Vector<_T, _TS>::Push(_T &&O)
 template <typename _T, int _TS>
 inline void Vector<_T, _TS>::Pop()
 {
-    Erase(_S-1);
+    Erase(_S - 1);
 }
 
 template <typename _T, int _TS>
@@ -176,6 +179,7 @@ inline void Vector<_T, _TS>::_Alloc(int _NS)
 
     if (_V != nullptr)
     {
+        int _OC = _C;
         _C = _NS;
         _T *_New = (_T *)::operator new(_C * sizeof(_T));
 
@@ -184,8 +188,10 @@ inline void Vector<_T, _TS>::_Alloc(int _NS)
         for (int i = 0; i < _S; i++)
             _V[i].~_T();
 
-        ::operator delete(_V, _C * sizeof(_T));
+        ::operator delete(_V, _OC * sizeof(_T));
         _V = _New;
+
+        return;
     }
 
     _C = _NS;

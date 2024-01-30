@@ -78,13 +78,20 @@ void operator delete(void *p, size_t size)
     free(p);
 }
 
+static void PrintMemoryMetrics()
+{        
+    _PRINT_("[MEMORY_METRICS]: Allocated: " << _MemoryManager._Allocation << " bytes..")
+    _PRINT_("[MEMORY_METRICS]: Freed: " << _MemoryManager._Free << " bytes..")
+}
+
 int main(int argc, char const *argv[])
 {
     std::cout << "Hello"
               << "\n";
 
     {
-        Vector<Test> _V = {Test(2), Test(3), Test(4)};
+        Vector<Test> _V;
+        _V = {Test(2), Test(3), Test(4)};
         _V.Reserve(10);
 
         _PRINT_("");
@@ -97,9 +104,7 @@ int main(int argc, char const *argv[])
     _PRINT_("");
 
     std::cin.get();
-
-    _PRINT_("[MEMORY_METRICS]: Allocated: " << _MemoryManager._Allocation << " bytes..")
-    _PRINT_("[MEMORY_METRICS]: Freed: " << _MemoryManager._Free << " bytes..")
+    PrintMemoryMetrics();
 
     return 0;
 }
