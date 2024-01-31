@@ -92,7 +92,10 @@ int main(int argc, char const *argv[])
     {
         Vector<Test> _V;
         _V = {Test(2), Test(3), Test(4)};
-        _V.Reserve(10);
+        _V.Reserve(4);
+        _V.Emplace(100);
+        _V.Emplace(200);
+        _V.Emplace(500);
 
         _PRINT_("");
         for (int i = 0; i < _V.Size(); i++)

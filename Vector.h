@@ -64,6 +64,10 @@ public:
     // Pushes the object to the end of _V by moving
     void Push(_T &&O);
 
+    // Rather than moving creates adds to _V from given args... 
+    template <typename... Args>
+    _T &Emplace(Args &&...args);
+
     // Pops the last object in _V
     void Pop();
 
@@ -71,10 +75,7 @@ public:
     void Erase(int i);
 
     // Reserves the given no of size in _V
-    void Reserve(int Size)
-    {
-        _Alloc(Size);
-    }
+    void Reserve(int Size) { _Alloc(Size); }
 
 private:
     // The dynamic array which stores the data
@@ -238,5 +239,15 @@ inline void Vector<_T, _TS>::_AuthSize() const
         _PRINT_("[VECTOR]: Size is 0");
         exit(EXIT_FAILURE);
     }
-    // Assert
+}
+
+template <typename _T, int _TS>
+template <typename... Args>
+inline _T &Vector<_T, _TS>::Emplace(Args &&...args)
+{
+    if (_S >= _C)
+        _Alloc(_C * _VEC_CAPACITY_SIZE_MULTIPLIER_);
+
+    new (&_V[_S]) _T(std::forward<Args>(args)...);
+    return _V[_S++];
 }
