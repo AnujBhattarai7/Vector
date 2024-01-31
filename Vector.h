@@ -1,7 +1,6 @@
 #pragma once
 
 #include <initializer_list>
-#include <iterator>
 
 #define _VEC_INITIAL_SIZE_ 10
 #define _VEC_CAPACITY_SIZE_MULTIPLIER_ 1.5
@@ -17,12 +16,64 @@
         exit(EXIT_FAILURE); \
     }
 
+template <typename Vector>
+typename Vector::ValueType class _Iterator_Base
+{
+public:
+//     using PointerType = ValueType *;
+//     using ReferenceType = ValueType &;
+
+// public:
+//     _Iterator_Base(PointerType P)
+//         _P(P) {}
+
+//     _Iterator_Base &operator++()
+//     {
+//         _P++;
+//         return *this;
+//     }
+
+//     _Iterator_Base operator++(int)
+//     {
+//         _Iterator_Base it = *this;
+//         ++(*this);
+//         return it;
+//     }
+
+//     _Iterator_Base &operator--()
+//     {
+//         _P--;
+//         return *this;
+//     }
+
+//     _Iterator_Base operator--(int)
+//     {
+//         _Iterator_Base it = *this;
+//         --(*this);
+//         return it;
+//     }
+
+//     ReferenceType operator[](int i) { return *(_P + i); }
+//     PointerType operator->() { return _P; }
+//     ReferenceType operator*() { return *_P; }
+
+//     bool operator==(const _Iterator_Base &_O) const { return _P == _O._P; }
+//     bool operator!=(const _Iterator_Base &_O) const { return !(*this == _O); }
+
+// private:
+//     PointerType _P;
+};
+
 template <typename _T, int _TS = 0>
 class Vector
 {
     // Comments:
     // _S : Stores Size of vector
     // _T : The class of Data
+
+public:
+    using ValueType = _T;
+    using Iterator = _Iterator_Base<Vector<_T>>;
 
 public:
     Vector(const std::initializer_list<_T> &_D)
@@ -64,7 +115,7 @@ public:
     // Pushes the object to the end of _V by moving
     void Push(_T &&O);
 
-    // Rather than moving creates adds to _V from given args... 
+    // Rather than moving creates adds to _V from given args...
     template <typename... Args>
     _T &Emplace(Args &&...args);
 
@@ -77,6 +128,13 @@ public:
     // Reserves the given no of size in _V
     void Reserve(int Size) { _Alloc(Size); }
 
+    Iterator begin() {  }
+    Iterator end() {  }
+
+public:
+private:
+private:
+public:
 private:
     // The dynamic array which stores the data
     _T *_V = nullptr;
