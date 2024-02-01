@@ -35,7 +35,7 @@ public:
         *this = _D;
     }
 
-    Vector(int Size = _TS) { _Alloc(Size); }
+    Vector(int Size = _TS) : _C(_TS + 2) { _Alloc(_C); }
 
     ~Vector()
     {
@@ -50,6 +50,13 @@ public:
     inline const int Size() const { return _S; }
     inline const int Capacity() const { return _C; }
     inline _T *Data() const { return &_V; }
+    inline _T &at(int _i) { return _V[_i]; }
+
+    // Copies the _O n times and assigns it
+    inline void Assign(int n, const _T &_O);
+
+    // Copies the _O from start(s) index to end(e) index
+    inline void Assign(int s, int e, const _T &_O);
 
     inline _T &operator[](int i) { return _Get(i); }
     inline const _T &operator[](int i) const { return _Get(i); }
@@ -62,21 +69,24 @@ public:
     _T &begin() const { return *_V; }
     _T &end() const { return *_V + Size(); }
 
-    // Pushes the object to the end of _V by copying
-    void Push(const _T &O);
+    // Push_Backes the object to the end of _V by copying
+    void Push_Back(const _T &O);
 
-    // Pushes the object to the end of _V by moving
-    void Push(_T &&O);
+    // Push_Backes the object to the end of _V by moving
+    void Push_Back(_T &&O);
 
     // Rather than moving creates adds to _V from given args...
     template <typename... Args>
-    _T &Emplace(Args &&...args);
+    _T &Emplace_Back(Args &&...args);
 
     // Pops the last object in _V
-    void Pop();
+    void Pop_Back();
 
     // Removes the given index from _V
     void Erase(int i);
+
+    // Removes the given index from s to e in _V
+    void Erase(int s, int e);
 
     // Reserves the given no of size in _V
     void Reserve(int Size) { _Alloc(Size); }
@@ -115,7 +125,35 @@ private:
 
     // Gives a error if _S <= 0
     void _AuthSize() const;
+
+    // Allocates memory even if _C is 0
+    void _Force_Alloc(int S);
 };
+
+template <typename _T, int _TS>
+inline void Vector<_T, _TS>::Assign(int n, const _T &_O)
+{
+    Flush();
+
+    if (n > _C)
+        _Alloc(n * _VEC_CAPACITY_SIZE_MULTIPLIER_);
+
+    for (_S = 0; _S < n; _S++)
+    {
+        _V[_S] = std::move(_O);
+    }
+}
+
+template <typename _T, int _TS>
+inline void Vector<_T, _TS>::Assign(int s, int e, const _T &_O)
+{
+    Erase(s, e);
+
+    for (int i = s; i < e; i++)
+    {
+        _V[i] = std::move(_O);
+    }
+}
 
 template <typename _T, int _TS>
 inline Vector<_T> &Vector<_T, _TS>::operator=(const std::initializer_list<_T> &_D)
@@ -146,25 +184,25 @@ inline void Vector<_T, _TS>::Flush()
 }
 
 template <typename _T, int _TS>
-inline void Vector<_T, _TS>::Push(const _T &O)
+inline void Vector<_T, _TS>::Push_Back(const _T &O)
 {
-    if (_S >= _C)
+    if (_S > _C)
         _Alloc(_C * _VEC_CAPACITY_SIZE_MULTIPLIER_);
 
     _V[_S++] = std::move(O);
 }
 
 template <typename _T, int _TS>
-inline void Vector<_T, _TS>::Push(_T &&O)
+inline void Vector<_T, _TS>::Push_Back(_T &&O)
 {
-    if (_S >= _C)
+    if (_S > _C)
         _Alloc(_C * _VEC_CAPACITY_SIZE_MULTIPLIER_);
 
     _V[_S++] = std::move(O);
 }
 
 template <typename _T, int _TS>
-inline void Vector<_T, _TS>::Pop()
+inline void Vector<_T, _TS>::Pop_Back()
 {
     Erase(_S - 1);
 }
@@ -173,10 +211,19 @@ template <typename _T, int _TS>
 inline void Vector<_T, _TS>::Erase(int i)
 {
     _AuthIndex(i);
-    _AuthSize();
 
     _V[i].~_T();
     _S--;
+}
+
+template <typename _T, int _TS>
+inline void Vector<_T, _TS>::Erase(int s, int e)
+{
+    _AuthIndex(s);
+    _AuthIndex(e);
+
+    for (int i = s; i < e; i++)
+        Erase(i);
 }
 
 template <typename _T, int _TS>
@@ -210,6 +257,8 @@ inline void Vector<_T, _TS>::_Alloc(int _NS)
 template <typename _T, int _TS>
 inline bool Vector<_T, _TS>::_AuthIndex(int I) const
 {
+    _AuthSize();
+
     if (I >= _S)
     {
         _PRINT_("[VECTOR]: Index: " << I << " out of range!!");
@@ -250,9 +299,9 @@ inline void Vector<_T, _TS>::_AuthSize() const
 
 template <typename _T, int _TS>
 template <typename... Args>
-inline _T &Vector<_T, _TS>::Emplace(Args &&...args)
+inline _T &Vector<_T, _TS>::Emplace_Back(Args &&...args)
 {
-    if (_S >= _C)
+    if (_S > _C)
         _Alloc(_C * _VEC_CAPACITY_SIZE_MULTIPLIER_);
 
     new (&_V[_S]) _T(std::forward<Args>(args)...);
