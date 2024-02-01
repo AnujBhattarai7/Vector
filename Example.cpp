@@ -98,10 +98,8 @@ int main(int argc, char const *argv[])
         _V.Emplace(500);
 
         _PRINT_("");
-        for (int i = 0; i < _V.Size(); i++)
-        {
-            _PRINT_(_V[i])
-        }
+        for(auto& i : _V)
+            _PRINT_(i)
         _PRINT_("");
     }
     _PRINT_("");
