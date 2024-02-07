@@ -1,7 +1,7 @@
 #pragma once
 
 #include <initializer_list>
-#include "Iterator.h"
+#include "../Iterator.h"
 
 #define _VEC_INITIAL_SIZE_ 10
 #define _VEC_CAPACITY_SIZE_MULTIPLIER_ 1.5
@@ -29,19 +29,22 @@ public:
     using Iterator = _Iterator_Base<ValueType>;
 
 public:
-    Vector(const std::initializer_list<_T> &_D)
-    {
-        _Alloc(_D.size());
-        *this = _D;
-    }
+    Vector(const std::initializer_list<_T> &_D) { *this = _D; }
 
-    Vector(int Size = _TS) : _C(_TS + 2) { _Alloc(_C); }
+    Vector(int _NS = _TS, bool _Alloc_ = true)
+    {
+        if (_Alloc_ == true)
+            _Alloc(_NS);
+        else
+            _Alloc(0);
+    }
 
     ~Vector()
     {
         Flush();
 
-        ::operator delete(_V, _C * sizeof(_T));
+        if (_V != nullptr)
+            ::operator delete(_V, _C * sizeof(_T));
         _V = nullptr;
     }
 
@@ -49,7 +52,7 @@ public:
 
     inline const int Size() const { return _S; }
     inline const int Capacity() const { return _C; }
-    inline _T *Data() const { return &_V; }
+    inline _T *Data() const { return _V; }
     inline _T &at(int _i) { return _V[_i]; }
 
     // Copies the _O n times and assigns it
@@ -89,7 +92,7 @@ public:
     void Erase(int s, int e);
 
     // Reserves the given no of size in _V
-    void Reserve(int Size) { _Alloc(Size); }
+    void Reserve(int Size);
 
     Iterator begin() { return Iterator(_V); }
     Iterator end() { return Iterator(_V + _S); }
@@ -118,7 +121,7 @@ private:
     int _AuthObj(_T &O) const;
 
     // Gets the object of the index and also checks for the object
-    _T &_Get(int i);
+    _T &_Get(int i) const;
 
     // Copies the data of _V into _A
     void _Copy(_T *_A);
@@ -186,7 +189,7 @@ inline void Vector<_T, _TS>::Flush()
 template <typename _T, int _TS>
 inline void Vector<_T, _TS>::Push_Back(const _T &O)
 {
-    if (_S > _C)
+    if (_S >= _C)
         _Alloc(_C * _VEC_CAPACITY_SIZE_MULTIPLIER_);
 
     _V[_S++] = std::move(O);
@@ -224,6 +227,14 @@ inline void Vector<_T, _TS>::Erase(int s, int e)
 
     for (int i = s; i < e; i++)
         Erase(i);
+}
+
+template <typename _T, int _TS>
+inline void Vector<_T, _TS>::Reserve(int Size)
+{
+    if (Size <= _C)
+        return;
+    _Alloc(Size);
 }
 
 template <typename _T, int _TS>
@@ -269,7 +280,7 @@ inline bool Vector<_T, _TS>::_AuthIndex(int I) const
 }
 
 template <typename _T, int _TS>
-inline _T &Vector<_T, _TS>::_Get(int i)
+inline _T &Vector<_T, _TS>::_Get(int i) const
 {
     _AuthIndex(i);
     return _V[i];
@@ -278,8 +289,6 @@ inline _T &Vector<_T, _TS>::_Get(int i)
 template <typename _T, int _TS>
 inline void Vector<_T, _TS>::_Copy(_T *_A)
 {
-    _AuthSize();
-
     // Copies the data into _A
     for (int i = 0; i < _S; i++)
     {
@@ -301,7 +310,7 @@ template <typename _T, int _TS>
 template <typename... Args>
 inline _T &Vector<_T, _TS>::Emplace_Back(Args &&...args)
 {
-    if (_S > _C)
+    if (_S + 1 > _C)
         _Alloc(_C * _VEC_CAPACITY_SIZE_MULTIPLIER_);
 
     new (&_V[_S]) _T(std::forward<Args>(args)...);
